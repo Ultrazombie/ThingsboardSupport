@@ -1,16 +1,15 @@
 #!/bin/bash
-patch="/tmp/backup/"
-backup=${patch}"PASTE_BACKUP_FILENAME"
+PATCH="/tmp/backup/"
+BACKUP=${PATCH}"PASTE_BACKUP_FILENAME"
 
-cd patch || exit 
+cd $PATCH || exit 
 cqlsh 127.0.0.1 < thingsboard-describe.txt
 
 
 sudo systemctl stop cassandra
 sudo mkdir thingsboard && cd $_
-sudo tar -xvf $backup
+sudo tar -xvf $BACKUP
 
-#Make sure that script is located  inside backup directory near ts_kv_* files.
 sudo mv ./ts_kv_cf* ./ts_kv_cf
 sudo mv ./ts_kv_partitions_cf* ./ts_kv_partitions_cf
 
