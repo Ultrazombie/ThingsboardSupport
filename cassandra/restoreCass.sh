@@ -21,5 +21,4 @@ cd $PATCH || exit
 sudo sstableloader --verbose --nodes 127.0.0.1 ./thingsboard/ts_kv_partitions_cf
 sudo sstableloader --verbose --nodes 127.0.0.1 ./thingsboard/ts_kv_cf
 
-cd ..
 sudo rm -rf thingsboard 
