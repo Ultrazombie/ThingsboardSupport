@@ -11,16 +11,24 @@ echo "$filesize"
 
 if [ $(echo "$avail<=$filesize" | bc) -ge 1 ]
 then
-echo "not enought space"
+    echo "not enought space"
 else
-echo "enought space"
+    echo "enought space"
 
-nodetool flush
+    nodetool flush
 
-mkdir -p /tmp/backup
-cqlsh 127.0.0.1 -e "DESCRIBE KEYSPACE thingsboard;" > /tmp/backup/thingsboard-describe.txt
+    mkdir -p /tmp/backup
+    cqlsh 127.0.0.1 -e "DESCRIBE KEYSPACE thingsboard;" > /tmp/backup/thingsboard-describe.txt
 
-sudo tar -cvf /tmp/backup/$current_date.cassandra.tar /var/lib/cassandra/data/thingsboard /tmp/backup/thingsboard-describe.txt
-rm -rf /tmp/backup/thingsboard-describe.txt
+    TARFILE=/tmp/backup/$current_date.cassandra.tar
+    sudo tar -cvf "$TARFILE" /var/lib/cassandra/data/thingsboard /tmp/backup/thingsboard-describe.txt
+    rm -rf /tmp/backup/thingsboard-describe.txt
 
+    TARFILE_SIZE=$(du "$TARFILE" | awk '{print $1}')
+    MINSIZE=100
+    if [ $(echo "$TARFILE_SIZE<=$MINSIZE" | bc) -ge 1 ]
+    then
+        echo "WARNING. Backup file is less then 100Kb"
+    fi
 fi
+
