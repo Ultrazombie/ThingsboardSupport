@@ -2,14 +2,10 @@
 PATCH="/tmp/backup/"
 BACKUP=${PATCH}"01-05-22_11:44.cassandra.tar"
 
-
 cd $PATCH || exit 
 
 sudo mkdir thingsboard && cd thingsboard
 sudo tar -xvf $BACKUP
-
-
-
 
 CF=$(sudo find . -name "ts_kv_cf*")
 PARTITIONS_CF=$(sudo find . -name "ts_kv_partitions_cf*")

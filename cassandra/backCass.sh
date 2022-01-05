@@ -11,9 +11,9 @@ echo "$filesize"
 
 if [ $(echo "$avail<=$filesize" | bc) -ge 1 ]
 then
-    echo "not enought space"
+  echo "Not enought free space"
 else
-    echo "enought space"
+  echo "Enought free space"
 
     nodetool flush
 
@@ -28,7 +28,7 @@ else
     MINSIZE=100
     if [ $(echo "$TARFILE_SIZE<=$MINSIZE" | bc) -ge 1 ]
     then
-        echo "WARNING. Backup file is less then 100Kb"
+        echo -e "\033[31m WARNING. Backup file is less then 100Kb"
     fi
 fi
 
