@@ -2,7 +2,8 @@
 LOG="/tmp/backup/backup.log"
 SLACK_FILE="/tmp/backup/slackmessage.log"
 PATCH="/tmp/backup/backup_psql/"
-WEBHOOK=https://hooks.slack.com/services/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
+DB="/var/lib/postgresql"
+WEBHOOK=""
 
 
 exec   > >(sudo tee -ia $LOG )

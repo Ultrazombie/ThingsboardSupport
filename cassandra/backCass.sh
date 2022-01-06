@@ -1,5 +1,15 @@
 #!/bin/bash
 
+WEBHOOK=""
+
+DB="/var/lib/cassandra/data/thingsboard"
+
+exec   > >(sudo tee -ia $LOG )
+exec  2> >(sudo tee -ia $LOG >& 2)
+exec   > >(sudo tee -i $SLACK_FILE)
+exec  2> >(sudo tee -i $SLACK_FILE >& 2)
+
+
 current_date=$(date +'%m-%d-%y_%H:%M')
 
 avail_in_Kb=$(df -BK / | tail -1 | awk '{print $4}' | sed -r  's/^[^0-9]*([0-9]+).*/\1/')
