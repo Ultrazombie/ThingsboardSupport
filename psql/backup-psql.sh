@@ -15,7 +15,7 @@ CUR_DATE=$(date +'%m-%d-%y_%H:%M')
 echo "-------- Start backup process at ${CUR_DATE} --------"
 
 AVAIL=$(df -m / | awk '{print $4}' | tail -1 )
-FILESIZE=$(sudo du -sm /var/lib/postgresql |  awk '{print int($1)}')
+FILESIZE=$(sudo du -sm $DB |  awk '{print int($1)}')
 
 echo "Free space: ${AVAIL} Mb"
 echo "Postgresql size: ${FILESIZE} Mb"
@@ -27,7 +27,6 @@ else
   echo " Enought free space"
   mkdir -p $PATCH
   sudo chmod -R o+rw $PATCH
-  CUR_DATE=$(date +'%m-%d-%y_%H:%M')
   SQLBAK=${PATCH}${CUR_DATE}.thingsboard.sql.bak
   sudo su -l postgres --session-command "pg_dump thingsboard > $SQLBAK"
 
