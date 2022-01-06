@@ -1,30 +1,46 @@
 #!/bin/bash
-
+LOG="/tmp/backup/backup.log"
+SLACK_FILE="/tmp/backup/slackmessage.log"
 PATCH="/tmp/backup/backup_psql/"
+WEBHOOK=https://hooks.slack.com/services/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
 
 
-avail_in_kb=$(df -BK / | tail -1 | awk '{print $4}' | sed -r  's/^[^0-9]*([0-9]+).*/\1/')
-filesize_in_bytes=$(du -s /var/lib/postgresql |  awk '{print int($1)}')
-AVAIL=$(echo "scale=6; ${avail_in_kb/1024/1024}" | bc -l)
-FILESIZE=$(echo "scale=6; ${filesize_in_bytes}/1024/1024/1024" | bc -l)
-echo "Free space: ${AVAIL} Gb"
-echo "Filesize: ${FILESIZE} Gb"
+exec   > >(sudo tee -ia $LOG )
+exec  2> >(sudo tee -ia $LOG >& 2)
+exec   > >(sudo tee -i $SLACK_FILE)
+exec  2> >(sudo tee -i $SLACK_FILE >& 2)
+
+CUR_DATE=$(date +'%m-%d-%y_%H:%M')
+echo "-------- Start backup process at ${CUR_DATE} --------"
+
+AVAIL=$(df -m / | awk '{print $4}' | tail -1 )
+FILESIZE=$(sudo du -sm /var/lib/postgresql |  awk '{print int($1)}')
+
+echo "Free space: ${AVAIL} Mb"
+echo "Postgresql size: ${FILESIZE} Mb"
 
 if [ $(echo "$AVAIL<=$FILESIZE" | bc) -ge 1 ]
 then
-  echo "Not enought free space"
+  echo " Not enought free space"
 else
-  echo "Enought free space"
+  echo " Enought free space"
   mkdir -p $PATCH
   sudo chmod -R o+rw $PATCH
   CUR_DATE=$(date +'%m-%d-%y_%H:%M')
   SQLBAK=${PATCH}${CUR_DATE}.thingsboard.sql.bak
   sudo su -l postgres --session-command "pg_dump thingsboard > $SQLBAK"
 
-  SQLBAK_SIZE=$(du "$SQLBAK" | awk '{print $1}')
-  MINSIZE=100
+  SQLBAK_SIZE=$(du -m "$SQLBAK" | awk '{print $1}')
+  echo "Backup file size: ${SQLBAK_SIZE} Mb"
+  MINSIZE=1
   if [ $(echo "$SQLBAK_SIZE<=$MINSIZE" | bc) -ge 1 ]
   then
-    echo -e "\033[31m WARNING. Backup file is less then 100Kb"
+    echo "WARNING. Backup file is less then 1 Mb"
   fi
 fi
+echo -e "------- Backup process finished at $(date +'%m-%d-%y_%H:%M') -------\n"
+
+SLACK_MESSAGE=$(cat $SLACK_FILE)
+SLACK_DATA="{\"text\":\"$(cat $SLACK_FILE)\"}"
+
+curl -X POST -H 'Content-type: application/json' --data "$SLACK_DATA" "$WEBHOOK"
