@@ -1,15 +1,19 @@
 #!/bin/bash
+source ../.env
 LOG="/tmp/backup/backup_psql/BackupPostgres.log"
 SLACK_FILE="/tmp/backup/backup_psql/SlackMessagePostgres.log"
 PATCH="/tmp/backup/backup_psql/"
 DB="/var/lib/postgresql"
-WEBHOOK=""
+WEBHOOK=$URL
+
+
 
 mkdir -p $PATCH
 sudo chmod -R o+rw $PATCH
 exec   > >(sudo tee -ia $LOG $SLACK_FILE)
 exec  2> >(sudo tee -ia $LOG $SLACK_FILE >& 2)
 truncate -s 0 $SLACK_FILE
+find $PATCH -mtime +3 -exec rm -f {} \; # delete backup older than * days
 
 CUR_DATE=$(date +'%m-%d-%y_%H:%M')
 echo "-------- Start Postgres backup process at ${CUR_DATE} --------"
@@ -39,7 +43,5 @@ else
 fi
 echo -e "------- Backup process finished at $(date +'%m-%d-%y_%H:%M') -------\n"
 
-SLACK_MESSAGE=$(cat $SLACK_FILE)
 SLACK_DATA="{\"text\":\"$(cat $SLACK_FILE)\"}"
-
 curl -X POST -H 'Content-type: application/json' --data "$SLACK_DATA" "$WEBHOOK"

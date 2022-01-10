@@ -1,15 +1,17 @@
 #!/bin/bash
+source ../.env
 LOG="/tmp/backup/backup_cassandra/BackupCassandra.log"
 SLACK_FILE="/tmp/backup/backup_cassandra/SlackMessageCass.log"
 PATCH="/tmp/backup/backup_cassandra/"
 DB="/var/lib/cassandra/data/thingsboard"
-WEBHOOK=""
+WEBHOOK=$URL
 
 mkdir -p $PATCH
 sudo chmod -R o+rw $PATCH
 exec   > >(sudo tee -ia $LOG $SLACK_FILE)
 exec  2> >(sudo tee -ia $LOG $SLACK_FILE >& 2)
 truncate -s 0 $SLACK_FILE
+find $PATCH -mtime +3 -exec rm -f {} \; # delete backup older than * days
 
 CUR_DATE=$(date +'%m-%d-%y_%H:%M')
 echo -e "\n-------- Start Cassandra backup process at ${CUR_DATE} --------"
@@ -30,8 +32,7 @@ else
     cqlsh 127.0.0.1 -e "DESCRIBE KEYSPACE thingsboard;" > ${PATCH}thingsboard-describe.txt
 
     TARFILE=$PATCH$CUR_DATE.cassandra.tar
-#     TARFILE=/tmp/backup/$current_date.cassandra.tar
-    sudo tar -cvf "$TARFILE" -P /var/lib/cassandra/data/thingsboard ${PATCH}thingsboard-describe.txt > 3
+    sudo tar -cvf "$TARFILE" -P /var/lib/cassandra/data/thingsboard ${PATCH}thingsboard-describe.txt > tarlog.log
     rm -rf ${PATCH}thingsboard-describe.txt
 
     TARFILE_SIZE=$(du -m "$TARFILE" | awk '{print $1}')
@@ -42,9 +43,7 @@ else
       echo "WARNING. Backup file is less then 1 Mb"
     fi
 fi
-
 echo -e "------- Backup process finished at $(date +'%m-%d-%y_%H:%M') -------"
 
 SLACK_DATA="{\"text\":\"$(cat $SLACK_FILE)\"}"
-
 curl -X POST -H 'Content-type: application/json' --data "$SLACK_DATA" "$WEBHOOK"
