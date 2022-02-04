@@ -20,10 +20,10 @@ function parse {
     done
   if [ $total == 0 ]
     then
-      echo "${MESSAGE}: 0 messages"
+      echo "$NAME ${MESSAGE}: 0 messages"
     else
-      echo "${MESSAGE}: average in minute is $(echo "scale=2; $total / $count" | /bin/bc ) "
-      echo "${MESSAGE}: max in minute is $max "
+      echo "$NAME ${MESSAGE}: average in minute is $(echo "scale=2; $total / $count" | /bin/bc ) "
+      echo "$NAME ${MESSAGE}: max in minute is $max "
   fi
 }
 
