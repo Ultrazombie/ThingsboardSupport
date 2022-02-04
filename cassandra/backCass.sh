@@ -1,9 +1,10 @@
 #!/bin/bash
 source ../.env
 LOG="/tmp/backup/backup_cassandra/BackupCassandra.log"
-SLACK_FILE="/tmp/backup/backup_cassandra/SlackMessageCass.log"
 PATCH="/tmp/backup/backup_cassandra/"
 DB="/var/lib/cassandra/data/thingsboard"
+
+SLACK_FILE="/tmp/backup/backup_cassandra/SlackMessageCass.log"
 WEBHOOK=$URL
 
 mkdir -p $PATCH

@@ -1,21 +1,22 @@
 #!/bin/bash
 source ../.env
 LOG="/tmp/backup/backup_psql/BackupPostgres.log"
-SLACK_FILE="/tmp/backup/backup_psql/SlackMessagePostgres.log"
 PATCH="/tmp/backup/backup_psql/"
 DB="/var/lib/postgresql"
-WEBHOOK=$URL
 
+SLACK_FILE="/tmp/backup/backup_psql/SlackMessagePostgres.log"
+WEBHOOK=$URL
 
 
 mkdir -p $PATCH
 sudo chmod -R o+rw $PATCH
 exec   > >(sudo tee -ia $LOG $SLACK_FILE)
 exec  2> >(sudo tee -ia $LOG $SLACK_FILE >& 2)
-truncate -s 0 $SLACK_FILE
+truncate -s 0 $SLACK_FILE 
 find $PATCH -mtime +3 -exec rm -f {} \; # delete backup older than * days
 
 CUR_DATE=$(date +'%m-%d-%y_%H:%M')
+
 echo "-------- Start Postgres backup process at ${CUR_DATE} --------"
 
 AVAIL=$(df -m / | awk '{print $4}' | tail -1 )
@@ -38,7 +39,7 @@ else
   MINSIZE=1
   if [ $(echo "$SQLBAK_SIZE<=$MINSIZE" | bc) -ge 1 ]
   then
-    echo "WARNING. Backup file is less then 1 Mb"
+    echo "WARN. Backup file is less then 1 Mb"
   fi
 fi
 echo -e "------- Backup process finished at $(date +'%m-%d-%y_%H:%M') -------\n"
