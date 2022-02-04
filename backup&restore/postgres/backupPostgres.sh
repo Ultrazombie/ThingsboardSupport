@@ -1,9 +1,9 @@
 #!/bin/bash
-LOG="/tmp/backup/backup_psql/BackupPostgres.log"
-PATH="/tmp/backup/backup_psql/"
+LOG="/tmp/backup/backup_postgres/BackupPostgres.log"
+PATH="/tmp/backup/backup_postgres/"
 DB="/var/lib/postgresql"
 
-WEBHOOK_FILE="/tmp/backup/backup_psql/WebhookMessagePostgres.log"
+WEBHOOK_FILE="/tmp/backup/backup_postgres/WebhookMessagePostgres.log"
 WEBHOOK="https://yourwebhookendpoint.com/"
 
 

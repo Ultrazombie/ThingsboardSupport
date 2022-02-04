@@ -3,7 +3,7 @@ LOG="/tmp/backup/backup_cassandra/BackupCassandra.log"
 PATH="/tmp/backup/backup_cassandra/"
 DB="/var/lib/cassandra/data/thingsboard"
 
-WEBHOOK_FILE="/tmp/backup/backup_psql/WebhookMessageCassandra.log"
+WEBHOOK_FILE="/tmp/backup/backup_cassandra/WebhookMessageCassandra.log"
 WEBHOOK="https://yourwebhookendpoint.com/"
 
 mkdir -p $PATH
