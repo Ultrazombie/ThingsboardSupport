@@ -1,19 +1,19 @@
 #!/bin/bash
 source ../.env
 LOG="/tmp/backup/backup_psql/BackupPostgres.log"
-PATCH="/tmp/backup/backup_psql/"
+PATH="/tmp/backup/backup_psql/"
 DB="/var/lib/postgresql"
 
 SLACK_FILE="/tmp/backup/backup_psql/SlackMessagePostgres.log"
 WEBHOOK=$URL
 
 
-mkdir -p $PATCH
-sudo chmod -R o+rw $PATCH
+mkdir -p $PATH
+sudo chmod -R o+rw $PATH
 exec   > >(sudo tee -ia $LOG $SLACK_FILE)
 exec  2> >(sudo tee -ia $LOG $SLACK_FILE >& 2)
 truncate -s 0 $SLACK_FILE 
-find $PATCH -mtime +3 -exec rm -f {} \; # delete backup older than * days
+find $PATH -mtime +3 -exec rm -f {} \; # delete backup older than * days
 
 CUR_DATE=$(date +'%m-%d-%y_%H:%M')
 
@@ -31,7 +31,7 @@ then
 else
   echo " Enought free space, starting..."
 
-  SQLBAK=${PATCH}${CUR_DATE}.thingsboard.sql.bak
+  SQLBAK=${PATH}${CUR_DATE}.thingsboard.sql.bak
   sudo su -l postgres --session-command "pg_dump thingsboard > $SQLBAK"
 
   SQLBAK_SIZE=$(du -m "$SQLBAK" | awk '{print $1}')
