@@ -1,18 +1,48 @@
 #!/bin/bash
+source ../.env
+LOG="/tmp/backup/backup_psql/BackupPostgres.log"
+PATCH="/tmp/backup/backup_psql/"
+DB="/var/lib/postgresql"
 
-avail_in_kb=$(df -BK / | tail -1 | awk '{print $4}' | sed -r  's/^[^0-9]*([0-9]+).*/\1/')
-filesize_in_bytes=$(du -s /var/lib/postgresql |  awk '{print int($1)}')
-avail=`echo "scale=6; $avail_in_kb/1024/1024" | bc -l`
-filesize=`echo "scale=6; $filesize_in_bytes/1024/1024/1024" | bc -l`
-echo "$avail"
-echo "$filesize"
+SLACK_FILE="/tmp/backup/backup_psql/SlackMessagePostgres.log"
+WEBHOOK=$URL
 
-if [ `echo "$avail<=$filesize" | bc` -ge 1 ]
+
+mkdir -p $PATCH
+sudo chmod -R o+rw $PATCH
+exec   > >(sudo tee -ia $LOG $SLACK_FILE)
+exec  2> >(sudo tee -ia $LOG $SLACK_FILE >& 2)
+truncate -s 0 $SLACK_FILE 
+find $PATCH -mtime +3 -exec rm -f {} \; # delete backup older than * days
+
+CUR_DATE=$(date +'%m-%d-%y_%H:%M')
+
+echo "-------- Start Postgres backup process at ${CUR_DATE} --------"
+
+AVAIL=$(df -m / | awk '{print $4}' | tail -1 )
+FILESIZE=$(sudo du -sm $DB |  awk '{print int($1)}')
+
+echo "Free space: ${AVAIL} Mb"
+echo "Postgresql size: ${FILESIZE} Mb"
+
+if [ $(echo "$AVAIL<=$FILESIZE" | bc) -ge 1 ]
 then
-#not enought free space
-echo "not enought space"
+  echo " Not enought free space"
 else
-#make backup
-echo "enought space"
-sudo su -l postgres --session-command "pg_dump thingsboard > /home/support/backup_psql/'$current_date'.thingsboard.sql.bak"
+  echo " Enought free space, starting..."
+
+  SQLBAK=${PATCH}${CUR_DATE}.thingsboard.sql.bak
+  sudo su -l postgres --session-command "pg_dump thingsboard > $SQLBAK"
+
+  SQLBAK_SIZE=$(du -m "$SQLBAK" | awk '{print $1}')
+  echo "Completed. Backup file size: ${SQLBAK_SIZE} Mb"
+  MINSIZE=1
+  if [ $(echo "$SQLBAK_SIZE<=$MINSIZE" | bc) -ge 1 ]
+  then
+    echo "WARN. Backup file is less then 1 Mb"
+  fi
 fi
+echo -e "------- Backup process finished at $(date +'%m-%d-%y_%H:%M') -------\n"
+
+SLACK_DATA="{\"text\":\"$(cat $SLACK_FILE)\"}"
+curl -X POST -H 'Content-type: application/json' --data "$SLACK_DATA" "$WEBHOOK"

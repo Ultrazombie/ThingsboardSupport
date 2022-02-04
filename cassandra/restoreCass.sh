@@ -1,20 +1,30 @@
 #!/bin/bash
 PATCH="/tmp/backup/"
-BACKUP=${PATCH}"PASTE_BACKUP_FILENAME"
+BACKUP=${PATCH}"01-05-22_11:44.cassandra.tar"
 
 cd $PATCH || exit 
-cqlsh 127.0.0.1 < thingsboard-describe.txt
 
-
-sudo systemctl stop cassandra
-sudo mkdir thingsboard && cd $_
+sudo mkdir thingsboard && cd thingsboard
 sudo tar -xvf $BACKUP
 
-sudo mv ./ts_kv_cf* ./ts_kv_cf
-sudo mv ./ts_kv_partitions_cf* ./ts_kv_partitions_cf
+CF=$(sudo find . -name "ts_kv_cf*")
+PARTITIONS_CF=$(sudo find . -name "ts_kv_partitions_cf*")
+LATEST=$(sudo find . -name "ts_kv_latest*")
+DESCRIBE=$(sudo find . -name "thingsboard-describe.txt")
 
-sstableloader --verbose --nodes 127.0.0.1 ./ts_kv_partitions_cf/
-sstableloader --verbose --nodes 127.0.0.1 ./ts_kv_cf/
+cqlsh 127.0.0.1 < $DESCRIBE
+sudo mv ${CF} ./ts_kv_cf
+sudo mv ${PARTITIONS_CF} ./ts_kv_partitions_cf
 
-cd ..
-sudo rm -rf thingsboard
+cd $PATCH || exit
+
+if [[ $LATEST ]]
+then
+  sudo mv ${LATEST} ./thingsboard/ts_kv_latest
+  sudo sstableloader --verbose --nodes 127.0.0.1 ./thingsboard/ts_kv_latest
+fi
+
+sudo sstableloader --verbose --nodes 127.0.0.1 ./thingsboard/ts_kv_partitions_cf
+sudo sstableloader --verbose --nodes 127.0.0.1 ./thingsboard/ts_kv_cf
+
+ sudo rm -rf thingsboard   
