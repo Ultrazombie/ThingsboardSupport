@@ -1,17 +1,16 @@
 #!/bin/bash
-source ../.env
 LOG="/tmp/backup/backup_cassandra/BackupCassandra.log"
 PATH="/tmp/backup/backup_cassandra/"
 DB="/var/lib/cassandra/data/thingsboard"
 
-SLACK_FILE="/tmp/backup/backup_cassandra/SlackMessageCass.log"
-WEBHOOK=$URL
+WEBHOOK_FILE="/tmp/backup/backup_psql/WebhookMessageCassandra.log"
+WEBHOOK="https://yourwebhookendpoint.com/"
 
 mkdir -p $PATH
 sudo chmod -R o+rw $PATH
-exec   > >(sudo tee -ia $LOG $SLACK_FILE)
-exec  2> >(sudo tee -ia $LOG $SLACK_FILE >& 2)
-truncate -s 0 $SLACK_FILE
+exec   > >(sudo tee -ia $LOG $WEBHOOK_FILE)
+exec  2> >(sudo tee -ia $LOG $WEBHOOK_FILE >& 2)
+truncate -s 0 $WEBHOOK_FILE
 find $PATH -mtime +3 -exec rm -f {} \; # delete backup older than * days
 
 CUR_DATE=$(date +'%m-%d-%y_%H:%M')
@@ -46,5 +45,5 @@ else
 fi
 echo -e "------- Backup process finished at $(date +'%m-%d-%y_%H:%M') -------"
 
-SLACK_DATA="{\"text\":\"$(cat $SLACK_FILE)\"}"
-curl -X POST -H 'Content-type: application/json' --data "$SLACK_DATA" "$WEBHOOK"
+WEBHOOK_DATA="{\"text\":\"$(cat $WEBHOOK_FILE)\"}"
+curl -X POST -H 'Content-type: application/json' --data "$WEBHOOK_DATA" "$WEBHOOK"
