@@ -1,6 +1,6 @@
 #!/bin/bash
 PATCH="/tmp/backup/"
-BACKUP=${PATCH}"01-05-22_11:44.cassandra.tar"
+BACKUP=${PATCH}"YOU_CASSANDRA_BACKUP"
 
 cd $PATCH || exit 
 
