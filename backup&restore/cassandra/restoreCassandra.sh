@@ -20,8 +20,8 @@ cd $PATCH || exit
 
 if [[ $LATEST ]]
 then
-  sudo mv ${LATEST} ./thingsboard/ts_kv_latest
-  sudo sstableloader --verbose --nodes 127.0.0.1 ./thingsboard/ts_kv_latest
+  sudo mv ${LATEST} ./thingsboard/ts_kv_latest_cf
+  sudo sstableloader --verbose --nodes 127.0.0.1 ./thingsboard/ts_kv_latest_cf
 fi
 
 sudo sstableloader --verbose --nodes 127.0.0.1 ./thingsboard/ts_kv_partitions_cf
