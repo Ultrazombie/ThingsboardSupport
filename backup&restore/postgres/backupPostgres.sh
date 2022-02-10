@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 LOG="/tmp/backup/backup_postgres/BackupPostgres.log"
 BACKUP_PATH="/tmp/backup/backup_postgres/"
 DB="/var/lib/postgresql"

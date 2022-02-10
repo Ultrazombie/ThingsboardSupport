@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 LOG="/tmp/backup/backup_cassandra/BackupCassandra.log"
 BACKUP_PATH="/tmp/backup/backup_cassandra/"
 DB="/var/lib/cassandra/data/thingsboard"
@@ -32,7 +33,7 @@ else
     cqlsh 127.0.0.1 -e "DESCRIBE KEYSPACE thingsboard;" > ${BACKUP_PATH}thingsboard-describe.txt
 
     TARFILE=$BACKUP_PATH$CUR_DATE.cassandra.tar
-    sudo tar -cvf "$TARFILE" -P /var/lib/cassandra/data/thingsboard ${BACKUP_PATH}thingsboard-describe.txt > tarlog.log
+    sudo tar -cf "$TARFILE" -P /var/lib/cassandra/data/thingsboard ${BACKUP_PATH}thingsboard-describe.txt
     rm -rf ${BACKUP_PATH}thingsboard-describe.txt
 
     TARFILE_SIZE=$(du -m "$TARFILE" | awk '{print $1}')
