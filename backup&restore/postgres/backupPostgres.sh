@@ -1,18 +1,18 @@
 #!/bin/bash
 LOG="/tmp/backup/backup_postgres/BackupPostgres.log"
-PATH="/tmp/backup/backup_postgres/"
+BACKUP_PATH="/tmp/backup/backup_postgres/"
 DB="/var/lib/postgresql"
 
 WEBHOOK_FILE="/tmp/backup/backup_postgres/WebhookMessagePostgres.log"
 WEBHOOK="https://yourwebhookendpoint.com/"
 
 
-mkdir -p $PATH
-sudo chmod -R o+rw $PATH
+mkdir -p $BACKUP_PATH
+sudo chmod -R o+rw $BACKUP_PATH
 exec   > >(sudo tee -ia $LOG $WEBHOOK_FILE)
 exec  2> >(sudo tee -ia $LOG $WEBHOOK_FILE >& 2)
 truncate -s 0 $WEBHOOK_FILE 
-find $PATH -mtime +3 -exec rm -f {} \; # delete backup older than * days
+find $BACKUP_PATH -mtime +3 -exec rm -f {} \; # delete backup older than * days
 
 CUR_DATE=$(date +'%m-%d-%y_%H:%M')
 
@@ -30,7 +30,7 @@ then
 else
   echo " Enought free space, starting..."
 
-  SQLBAK=${PATH}${CUR_DATE}.thingsboard.sql.bak
+  SQLBAK=${BACKUP_PATH}${CUR_DATE}.thingsboard.sql.bak
   sudo su -l postgres --session-command "pg_dump thingsboard > $SQLBAK"
 
   SQLBAK_SIZE=$(du -m "$SQLBAK" | awk '{print $1}')

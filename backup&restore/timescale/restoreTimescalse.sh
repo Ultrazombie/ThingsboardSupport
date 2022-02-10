@@ -3,8 +3,8 @@
 HOST="192.168.244.129"
 cd "$HOME/backupTimescale/"
 ls -l
-echo "Please enter the path of directory backup (ex- 2021-12-22_14-22)"
-read -p "Please enter the path of backup directory (ex- 2021-12-22_14-22)" -r INPUT
+echo "Please enter the BACKUP_PATH of directory backup (ex- 2021-12-22_14-22)"
+read -p "Please enter the BACKUP_PATH of backup directory (ex- 2021-12-22_14-22)" -r INPUT
 PATCH="/home/support/backupTimescale/${INPUT}"
 
 PATCHDUMP="${PATCH}/backup.bak"
