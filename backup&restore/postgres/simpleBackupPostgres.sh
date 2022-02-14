@@ -4,7 +4,6 @@ DB="/var/lib/postgresql"
 
 mkdir -p $BACKUP_PATH
 sudo chmod -R o+rw $BACKUP_PATH
-
 echo "---- Start Postgres backup process at $(date +'%m-%d-%y_%H:%M') ----"
 AVAIL=$(df -m / | awk '{print $4}' | tail -1 )
 FILESIZE=$(sudo -u postgres psql -c "SELECT pg_size_pretty( pg_database_size('thingsboard') );" | awk '{print $1}'| head -n 3| tail -1)
@@ -29,4 +28,3 @@ else
   fi
 fi
 echo -e "------- Backup process finished at $(date +'%m-%d-%y_%H:%M') -------\n"
-
