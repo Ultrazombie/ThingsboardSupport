@@ -1,6 +1,6 @@
 #!/bin/bash
 function parse {
-  BACKUP_PATH=$1
+  LOGS_PATH=$1
   NAME=$2
   MESSAGE=$3
   MESSAGE_FILENAME="./temp/${MESSAGE}tb.txt"
@@ -8,7 +8,7 @@ function parse {
   count=0
   total=0
   max=0
-  /bin/sudo /bin/cat ${BACKUP_PATH} | /bin/grep "$NAME" | /bin/grep -o $MESSAGE_REGEX > $MESSAGE_FILENAME 
+  /bin/sudo /bin/cat ${LOGS_PATH} | /bin/grep "$NAME" | /bin/grep -o $MESSAGE_REGEX > $MESSAGE_FILENAME 
   for i in $( /bin/awk -F'[][]' '{print $2}' $MESSAGE_FILENAME )
     do 
       total=$(echo $total+$i | /bin/bc )
@@ -27,7 +27,7 @@ function parse {
   fi
 }
 
-BACKUP_PATH="/var/log/thingsboard/thingsboard.log"
+LOGS_PATH="/var/log/thingsboard/thingsboard.log"
 TOTAL='totalMsgs' 
 SUCCESSFUL='successfulMsgs' 
 FAILED='failedMsgs'
@@ -36,11 +36,11 @@ FAILURES='failures'
 TOTAL_ADDED='totalAdded'
 
 /bin/mkdir -p temp
-parse $BACKUP_PATH TbRuleEngineConsumerStats $TOTAL
-parse $BACKUP_PATH TbRuleEngineConsumerStats $SUCCESSFUL
-parse $BACKUP_PATH TbRuleEngineConsumerStats $FAILED
-parse $BACKUP_PATH "JS.Invoke.Stats" $REQUESTS
-parse $BACKUP_PATH "JS.Invoke.Stats" $FAILURES
-parse $BACKUP_PATH CassandraBufferedRateExecutor $TOTAL_ADDED
-parse $BACKUP_PATH TbSqlBlockingQueue $TOTAL_ADDED
+parse $LOGS_PATH TbRuleEngineConsumerStats $TOTAL
+parse $LOGS_PATH TbRuleEngineConsumerStats $SUCCESSFUL
+parse $LOGS_PATH TbRuleEngineConsumerStats $FAILED
+parse $LOGS_PATH "JS.Invoke.Stats" $REQUESTS
+parse $LOGS_PATH "JS.Invoke.Stats" $FAILURES
+parse $LOGS_PATH CassandraBufferedRateExecutor $TOTAL_ADDED
+parse $LOGS_PATH TbSqlBlockingQueue $TOTAL_ADDED
 /bin/sudo /bin/rm -r ./temp/*tb.txt
