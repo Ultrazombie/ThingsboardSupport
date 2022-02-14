@@ -1,4 +1,4 @@
-#!/bin/bash
+#!bash
 function parse {
   LOGS_PATH=$1
   NAME=$2
@@ -8,12 +8,12 @@ function parse {
   count=0
   total=0
   max=0
-  /bin/sudo /bin/cat ${LOGS_PATH} | /bin/grep "$NAME" | /bin/grep -o $MESSAGE_REGEX > $MESSAGE_FILENAME 
-  for i in $( /bin/awk -F'[][]' '{print $2}' $MESSAGE_FILENAME )
+  sudo cat ${LOGS_PATH} | grep "$NAME" | grep -o $MESSAGE_REGEX > $MESSAGE_FILENAME 
+  for i in $( awk -F'[][]' '{print $2}' $MESSAGE_FILENAME )
     do 
-      total=$(echo $total+$i | /bin/bc )
+      total=$(echo $total+$i | bc )
       ((count++))
-      if [ $(echo "$max<=$i" | /bin/bc) -ge 1 ] 
+      if [ $(echo "$max<=$i" | bc) -ge 1 ] 
         then 
           max=$i
         fi
@@ -22,7 +22,7 @@ function parse {
     then
       echo "$NAME ${MESSAGE}: 0 messages"
     else
-      echo "$NAME ${MESSAGE}: average in minute is $(echo "scale=2; $total / $count" | /bin/bc ) "
+      echo "$NAME ${MESSAGE}: average in minute is $(echo "scale=2; $total / $count" | bc ) "
       echo "$NAME ${MESSAGE}: max in minute is $max "
   fi
 }
@@ -35,7 +35,7 @@ REQUESTS='requests'
 FAILURES='failures'
 TOTAL_ADDED='totalAdded'
 
-/bin/mkdir -p temp
+mkdir -p temp
 parse $LOGS_PATH TbRuleEngineConsumerStats $TOTAL
 parse $LOGS_PATH TbRuleEngineConsumerStats $SUCCESSFUL
 parse $LOGS_PATH TbRuleEngineConsumerStats $FAILED
@@ -43,4 +43,4 @@ parse $LOGS_PATH "JS.Invoke.Stats" $REQUESTS
 parse $LOGS_PATH "JS.Invoke.Stats" $FAILURES
 parse $LOGS_PATH CassandraBufferedRateExecutor $TOTAL_ADDED
 parse $LOGS_PATH TbSqlBlockingQueue $TOTAL_ADDED
-/bin/sudo /bin/rm -r ./temp/*tb.txt
+sudo rm -r ./temp/*tb.txt
