@@ -16,7 +16,7 @@ find $BACKUP_PATH -mtime +3 -exec rm -f {} \; # delete backup older than * days
 
 CUR_DATE=$(date +'%m-%d-%y_%H:%M')
 
-echo "-------- Start Postgres backup process at ${CUR_DATE} --------"
+echo "---- Start Postgres backup process at $(date +'%m-%d-%y_%H:%M') ----"
 
 AVAIL=$(df -m / | awk '{print $4}' | tail -1 )
 FILESIZE=$(sudo -u postgres psql -c "SELECT pg_size_pretty( pg_database_size('thingsboard') );" | awk '{print $1}'| head -n 3 | tail -1)
@@ -30,7 +30,7 @@ then
 else
   echo " Enought free space, starting..."
 
-  SQLBAK=${BACKUP_PATH}${CUR_DATE}.thingsboard.sql.bak
+  SQLBAK=${BACKUP_PATH}$(date +'%m-%d-%y_%H:%M').thingsboard.sql.bak
   sudo su -l postgres --session-command "pg_dump thingsboard > $SQLBAK"
 
   SQLBAK_SIZE=$(du -m "$SQLBAK" | awk '{print $1}')
