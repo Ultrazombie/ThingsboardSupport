@@ -1,11 +1,9 @@
 #!/bin/bash
-
 BACKUP_PATH="/home/${USER}/backup/postgres/"
 LOG="${BACKUP_PATH}BackupPostgres.log"
 
 WEBHOOK_FILE="${BACKUP_PATH}WebhookMessagePostgres.log"
 WEBHOOK="https://yourwebhookendpoint.com/"
-
 
 mkdir -p $BACKUP_PATH
 sudo chmod -R o+rw $BACKUP_PATH
@@ -14,9 +12,7 @@ exec  2> >(sudo tee -ia $LOG $WEBHOOK_FILE >& 2)
 truncate -s 0 $WEBHOOK_FILE 
 find $BACKUP_PATH -mtime +3 -exec rm -f {} \; # delete backup older than * days
 
-CUR_DATE=$(date +'%m-%d-%y_%H:%M')
-
-echo "---- Start Postgres backup process at $(date +'%m-%d-%y_%H:%M') ----"
+echo -e "---- Start Postgres backup process at $(date +'%m-%d-%y_%H:%M') ----"
 
 AVAIL=$(df -m / | awk '{print $4}' | tail -1 )
 FILESIZE=$(sudo -u postgres psql -c "SELECT pg_size_pretty( pg_database_size('thingsboard') );" | awk '{print $1}'| head -n 3 | tail -1)
