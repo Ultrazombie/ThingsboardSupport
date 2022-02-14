@@ -1,5 +1,5 @@
 #!/bin/bash
-BACKUP_PATH="/home/support/backup_postgres/"
+BACKUP_PATH="/home/${USER}/backup/postgres/"
 DB="/var/lib/postgresql"
 
 mkdir -p $BACKUP_PATH
