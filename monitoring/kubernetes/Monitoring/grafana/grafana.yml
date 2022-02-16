@@ -1,0 +1,140 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: thingsboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      name: grafana
+      labels:
+        app: grafana
+    spec:
+      securityContext:
+        fsGroup: 472
+        supplementalGroups:
+          - 0
+      containers:
+        - name: grafana
+          image: grafana/grafana:latest
+          ports:
+            - name: grafana
+              containerPort: 3000
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+            requests:
+              memory: 500M
+              cpu: "500m"
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-storage
+            - mountPath: /etc/grafana/provisioning/datasources
+              name: grafana-datasources
+              readOnly: false
+      volumes:
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+        - name: grafana-datasources
+          configMap:
+            defaultMode: 420
+            name: grafana-datasources
+---
+sum (rate (container_cpu_usage_seconds_total{ role=~"main", pod!="", kubernetes_io_hostname=~"^gke-tb-.*"}[$interval])) by (container_name)
+"legend": { "displayMode": "table", "placement": "right", "calcs": [ "sum", "max" ], "sortBy": "sum", "sortDesc": true }
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: thingsboard
+data:
+  prometheus.yaml: |-
+    {
+        "apiVersion": 1,
+        "datasources": [
+            {
+               "access":"proxy",
+                "editable": true,
+                "name": "prometheus",
+                "orgId": 1,
+                "type": "prometheus",
+                "url": "http://prometheus-service.thingsboard.svc:80",
+                "version": 1
+            }
+        ]
+    }
+  loki.yaml: |-
+    {
+        "apiVersion": 1,
+        "datasources": [
+            {
+               "access":"proxy",
+                "editable": true,
+                "name": "loki",
+                "orgId": 1,
+                "type": "loki",
+                "url": "http://loki-service.thingsboard.svc:3100",
+                "version": 1
+            }
+        ]
+    }
+---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: grafana
+#   namespace: thingsboard
+#   annotations:
+#     grafana.io/scrape: 'true'
+#     grafana.io/port:   '3000'
+# spec:
+#   # selector:
+#   #   app: grafana
+#   # type: NodePort
+#   # ports:
+#   #   - port: 3000
+#   #     targetPort: 3000
+#   #     nodePort: 31000
+
+#   selector:
+#     app: grafana
+#   type: ClusterIP
+#   ports:
+#   - port: 3000
+#     name: http
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: thingsboard
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app: grafana
+  ports:
+    - port: 80
+      targetPort: 3000
+      name: grafana
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: thingsboard
+  labels:
+    app: postgres
+  name: grafana-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
