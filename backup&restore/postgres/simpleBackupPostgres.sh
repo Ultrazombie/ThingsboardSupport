@@ -1,6 +1,5 @@
 #!/bin/bash
 BACKUP_PATH="/home/${USER}/backup/postgres/"
-DB="/var/lib/postgresql"
 
 mkdir -p $BACKUP_PATH
 sudo chmod -R o+rw $BACKUP_PATH
