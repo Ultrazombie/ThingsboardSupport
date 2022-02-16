@@ -46,9 +46,6 @@ spec:
             defaultMode: 420
             name: grafana-datasources
 ---
-sum (rate (container_cpu_usage_seconds_total{ role=~"main", pod!="", kubernetes_io_hostname=~"^gke-tb-.*"}[$interval])) by (container_name)
-"legend": { "displayMode": "table", "placement": "right", "calcs": [ "sum", "max" ], "sortBy": "sum", "sortDesc": true }
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
