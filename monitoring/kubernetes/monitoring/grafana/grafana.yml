@@ -24,20 +24,20 @@ spec:
           ports:
             - name: grafana
               containerPort: 3000
-          # volumeMounts:
-          #   - mountPath: /var/lib/grafana
-          #     name: grafana-storage
-          #   - mountPath: /etc/grafana/provisioning/datasources
-          #     name: grafana-datasources
-          #     readOnly: false
-      # volumes:
-      #   - name: grafana-storage
-      #     persistentVolumeClaim:
-      #       claimName: grafana-pvc
-      #   - name: grafana-datasources
-      #     configMap:
-      #       defaultMode: 420
-      #       name: grafana-datasources
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-storage
+            - mountPath: /etc/grafana/provisioning/datasources
+              name: grafana-datasources
+              readOnly: false
+      volumes:
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+        - name: grafana-datasources
+          configMap:
+            defaultMode: 420
+            name: grafana-datasources
 ---
 
 apiVersion: v1
@@ -77,6 +77,7 @@ data:
         ]
     }
 ---
+# For cloud
 apiVersion: v1
 kind: Service
 metadata:
@@ -94,13 +95,7 @@ spec:
       targetPort: 3000
       nodePort: 31000
 
-#   selector:
-#     app: grafana
-#   type: ClusterIP
-#   ports:
-#   - port: 3000
-#     name: http
-
+# For minikube 
 # apiVersion: v1
 # kind: Service
 # metadata:
@@ -116,16 +111,16 @@ spec:
 #       targetPort: 3000
 #       name: grafana
 ---
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   namespace: thingsboard
-#   labels:
-#     app: postgres
-#   name: grafana-pvc
-# spec:
-#   accessModes:
-#     - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: 1Gi
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: thingsboard
+  labels:
+    app: postgres
+  name: grafana-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
