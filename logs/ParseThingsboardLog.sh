@@ -1,6 +1,6 @@
 #!/bin/bash
 function parse {
-  PATH=$1
+  LOGS_PATH=$1
   NAME=$2
   MESSAGE=$3
   MESSAGE_FILENAME="./temp/${MESSAGE}tb.txt"
@@ -8,12 +8,12 @@ function parse {
   count=0
   total=0
   max=0
-  /bin/sudo /bin/cat ${PATH} | /bin/grep "$NAME" | /bin/grep -o $MESSAGE_REGEX > $MESSAGE_FILENAME 
-  for i in $( /bin/awk -F'[][]' '{print $2}' $MESSAGE_FILENAME )
+  sudo cat ${LOGS_PATH} | grep "$NAME" | grep -o $MESSAGE_REGEX > $MESSAGE_FILENAME 
+  for i in $( awk -F'[][]' '{print $2}' $MESSAGE_FILENAME )
     do 
-      total=$(echo $total+$i | /bin/bc )
+      total=$(echo $total+$i | bc )
       ((count++))
-      if [ $(echo "$max<=$i" | /bin/bc) -ge 1 ] 
+      if [ $(echo "$max<=$i" | bc) -ge 1 ] 
         then 
           max=$i
         fi
@@ -22,12 +22,12 @@ function parse {
     then
       echo "$NAME ${MESSAGE}: 0 messages"
     else
-      echo "$NAME ${MESSAGE}: average in minute is $(echo "scale=2; $total / $count" | /bin/bc ) "
+      echo "$NAME ${MESSAGE}: average in minute is $(echo "scale=2; $total / $count" | bc ) "
       echo "$NAME ${MESSAGE}: max in minute is $max "
   fi
 }
 
-PATH="/var/log/thingsboard/thingsboard.log"
+LOGS_PATH="/home/support/issues/cp-6009/11254/tb/afterRestart/thingsboard.2022-02-01.35.log"
 TOTAL='totalMsgs' 
 SUCCESSFUL='successfulMsgs' 
 FAILED='failedMsgs'
@@ -35,12 +35,14 @@ REQUESTS='requests'
 FAILURES='failures'
 TOTAL_ADDED='totalAdded'
 
-/bin/mkdir -p temp
-parse $PATH TbRuleEngineConsumerStats $TOTAL
-parse $PATH TbRuleEngineConsumerStats $SUCCESSFUL
-parse $PATH TbRuleEngineConsumerStats $FAILED
-parse $PATH "JS.Invoke.Stats" $REQUESTS
-parse $PATH "JS.Invoke.Stats" $FAILURES
-parse $PATH CassandraBufferedRateExecutor $TOTAL_ADDED
-parse $PATH TbSqlBlockingQueue $TOTAL_ADDED
-/bin/sudo /bin/rm -r ./temp/*tb.txt
+mkdir -p temp
+# parse $LOGS_PATH TbRuleEngineConsumerStats $TOTAL
+# parse $LOGS_PATH TbRuleEngineConsumerStats $SUCCESSFUL
+# parse $LOGS_PATH TbRuleEngineConsumerStats $FAILED
+# parse $LOGS_PATH "JS.Invoke.Stats" $REQUESTS
+# parse $LOGS_PATH "JS.Invoke.Stats" $FAILURES
+parse $LOGS_PATH CassandraBufferedRateExecutor $TOTAL_ADDED
+parse $LOGS_PATH CassandraBufferedRateExecutor "totalLaunched"
+parse $LOGS_PATH CassandraBufferedRateExecutor "currBuffer"
+# parse $LOGS_PATH TbSqlBlockingQueue $TOTAL_ADDED
+sudo rm -r ./temp/*tb.txt

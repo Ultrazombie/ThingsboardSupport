@@ -19,8 +19,10 @@
 kubectl config set-context $(kubectl config current-context) --namespace=thingsboard
 
 
-kubectl apply -f ./Monitoring/promtail/
-kubectl apply -f ./Monitoring/loki/
-kubectl apply -f ./Monitoring/prometheus/
-kubectl apply -f ./Monitoring/grafana/
-kubectl apply -f ./Monitoring/metrics/
+kubectl apply -f ./monitoring/promtail/
+kubectl apply -f ./monitoring/loki/
+kubectl apply -f ./monitoring/prometheus/
+kubectl apply -f ./monitoring/grafana/
+kubectl apply -f ./monitoring/metrics/
+kubectl apply -f ./monitoring/exporter/
+kubectl apply -f ./monitoring/clusterrole/

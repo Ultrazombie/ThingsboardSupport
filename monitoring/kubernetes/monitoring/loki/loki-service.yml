@@ -7,14 +7,6 @@ metadata:
     loki.io/scrape: 'true'
     loki.io/port:   '3100'
 spec:
-  # selector:
-  #   app: loki-server
-  # type: NodePort
-  # ports:
-  #   - port: 3100
-  #     targetPort: 3100
-  #     nodePort: 32000
-
   selector:
     app: loki-server
   type: ClusterIP

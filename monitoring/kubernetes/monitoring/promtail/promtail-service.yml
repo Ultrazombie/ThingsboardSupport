@@ -13,13 +13,6 @@ metadata:
     promtail.io/scrape: 'true'
     promtail.io/port:   '9080'
 spec:
-  # selector:
-  #   app: promtail-server
-  # type: NodePort
-  # ports:
-  #   - port: 9080
-  #     targetPort: 9080
-  #     nodePort: 30080
   selector:
     app: promtail-server
   type: ClusterIP

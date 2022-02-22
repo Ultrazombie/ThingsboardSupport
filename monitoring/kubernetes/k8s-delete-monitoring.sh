@@ -18,8 +18,10 @@
 
 kubectl config set-context $(kubectl config current-context) --namespace=thingsboard
 
-kubectl delete -f ./Monitoring/loki/
-kubectl delete -f ./Monitoring/prometheus/
-kubectl delete -f ./Monitoring/grafana/
-kubectl delete -f ./Monitoring/promtail/
-kubectl delete -f ./Monitoring/metrics/
+kubectl delete -f ./monitoring/loki/
+kubectl delete -f ./monitoring/prometheus/
+kubectl delete -f ./monitoring/grafana/
+kubectl delete -f ./monitoring/promtail/
+kubectl delete -f ./monitoring/metrics/
+kubectl delete -f ./monitoring/exporter/
+kubectl delete -f ./monitoring/clusterrole/
