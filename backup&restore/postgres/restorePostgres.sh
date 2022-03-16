@@ -1,3 +1,3 @@
 #!/bin/bash
 
-psql -U postgres -d thingsboard -W< /home/support/backup_psql/.thingsboard.sql.bak
+psql -U postgres -d thingsboard -W< /home/${USER}/backup/postgres/.thingsboard.sql.bak
