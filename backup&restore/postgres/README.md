@@ -22,7 +22,7 @@ Here you can find our scripts to backup and restore the thingsboard database in 
 
  **Backup**:                                                
 1. You dont need to stop Postgres for perform backup
-2. Before running backup script can change BACKUP_PATH to your own.
+2. Before running backup script you can change BACKUP_PATH to your own path.
 3. If you want to use webhook, you need to insert the endpoint of your webhook into WEBHOOK.
 
  **Restore**:
