@@ -13,6 +13,7 @@ Here you can find our scripts to backup and restore the thingsboard database in 
 - Next to the backup file will be a log file. Here you can track whether any errors occurred during backup.
 - Script will calculate the amount of free space and database size, and either generate a warning or continue the backup.
 - After a backup is created, you can see in logs the size of the backup file and make sure it contains information. Otherwise you will get a warning.
+
 `simpleBackupPostgres.sh` is a simplified script which can be used to run manually, e.g. if you need to make a backup before upgrading. It performs the same functions as the previous one except for logging and sending a webhook message 
 
 `restorePostgres.sh` - The script restores the database. You only need to select the backup file path after "<"
