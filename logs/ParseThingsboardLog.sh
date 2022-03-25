@@ -1,5 +1,20 @@
-#!bash
-function parse {
+#!/bin/bash
+
+LOGS_PATH="./thingsboard.log"
+
+if [ $1 ]
+then
+  LOGS_PATH=$1
+fi
+
+TOTAL='totalMsgs' 
+SUCCESSFUL='successfulMsgs' 
+FAILED='failedMsgs'
+REQUESTS='requests'
+FAILURES='failures'
+TOTAL_ADDED='totalAdded'
+
+function parse_log {
   LOGS_PATH=$1
   NAME=$2
   MESSAGE=$3
@@ -27,20 +42,19 @@ function parse {
   fi
 }
 
-LOGS_PATH="/var/log/thingsboard/thingsboard.log"
-TOTAL='totalMsgs' 
-SUCCESSFUL='successfulMsgs' 
-FAILED='failedMsgs'
-REQUESTS='requests'
-FAILURES='failures'
-TOTAL_ADDED='totalAdded'
-
+if [ ! -f "$LOGS_PATH" ]; 
+then
+    echo "File $LOGS_PATH not exist"
+else
 mkdir -p temp
-parse $LOGS_PATH TbRuleEngineConsumerStats $TOTAL
-parse $LOGS_PATH TbRuleEngineConsumerStats $SUCCESSFUL
-parse $LOGS_PATH TbRuleEngineConsumerStats $FAILED
-parse $LOGS_PATH "JS.Invoke.Stats" $REQUESTS
-parse $LOGS_PATH "JS.Invoke.Stats" $FAILURES
-parse $LOGS_PATH CassandraBufferedRateExecutor $TOTAL_ADDED
-parse $LOGS_PATH TbSqlBlockingQueue $TOTAL_ADDED
-sudo rm -r ./temp/*tb.txt
+parse_log $LOGS_PATH TbRuleEngineConsumerStats $TOTAL
+parse_log $LOGS_PATH TbRuleEngineConsumerStats $SUCCESSFUL
+parse_log $LOGS_PATH TbRuleEngineConsumerStats $FAILED
+parse_log $LOGS_PATH "JS.Invoke.Stats" $REQUESTS
+parse_log $LOGS_PATH "JS.Invoke.Stats" $FAILURES
+parse_log $LOGS_PATH CassandraBufferedRateExecutor $TOTAL_ADDED
+parse_log $LOGS_PATH TbSqlBlockingQueue $TOTAL_ADDED
+
+sudo rm -r ./temp
+fi
+
