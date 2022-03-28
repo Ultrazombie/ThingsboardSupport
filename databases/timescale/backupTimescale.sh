@@ -2,6 +2,7 @@
 
 #!/bin/bash
 BACKUP_PATH="/home/${USER}/backup/postgres&timescale/"
+HOSTNAME="YOU_POSTGRES_HOSTNAME"
 LOG="${BACKUP_PATH}BackupPostgres.log"
 
 WEBHOOK_FILE="${BACKUP_PATH}WebhookMessagePostgres.log"
@@ -28,9 +29,8 @@ then
 else
   echo " Enought free space, starting..."
 
-  SQLBAK=${BACKUP_PATH}$(date +'%m-%d-%y_%H:%M').thingsboard.bak
-  HOST="YOU_POSTGRES_HOSTNAME"
-  sudo pg_dump -h $HOST -U postgres -Fc -f "${SQLBAK}" thingsboard
+  SQLBAK=${BACKUP_PATH}$(date +'%m-%d-%y_%H:%M').thingsboard.bak 
+  sudo pg_dump -h $HOSTNAME -U postgres -Fc -f "${SQLBAK}" thingsboard
 
   SQLBAK_SIZE=$(du -m "$SQLBAK" | awk '{print $1}')
   echo "Completed. Backup file size: ${SQLBAK_SIZE} Mb"
