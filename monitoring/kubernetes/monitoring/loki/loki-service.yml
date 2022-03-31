@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: loki-service
+  namespace: thingsboard
+  annotations:
+    loki.io/scrape: 'true'
+    loki.io/port:   '3100'
+spec:
+  selector:
+    app: loki-server
+  type: ClusterIP
+  ports:
+  - port: 3100
+    name: http
+---
