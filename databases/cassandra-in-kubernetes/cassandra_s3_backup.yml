@@ -7,7 +7,6 @@ spec:
 
   containers:
   - name: cass-to-s3
-    # image: alpine/k8s:1.22.6
     image: pon0mar/k8s-backup
     imagePullPolicy: Always
     env:
@@ -52,20 +51,10 @@ data:
   s3cfg: |+
     [default]
     host_base = s3.amazonaws.com
-    host_bucket = tbandrii.s3.eu-central-1.amazonaws.com
+    host_bucket = 
     check_ssl_certificate = False
     use_https = True
     cloudfront_host = cloudfront.amazonaws.com
-    access_key = AKIAVQI7XYHZWDO3IKX5
-    secret_key = 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
+    access_key = 
+    secret_key = 
 ---
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: tb-backup-cassandra
-# spec:
-#   accessModes:
-#     - ReadWriteMany
-#   resources:
-#     requests:
-#       storage: 4Gi
