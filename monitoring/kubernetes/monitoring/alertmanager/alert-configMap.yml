@@ -31,8 +31,8 @@ data:
         require_tls: false
     - name: alert-slack
       slack_configs:
-      - api_url: https://hooks.slack.com/services/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
-        channel: '#ponomartest'
+      - api_url: 
+        channel: 
         title: |-
           [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }} for {{ .CommonLabels.job }}
           {{- if gt (len .CommonLabels) (len .GroupLabels) -}}
