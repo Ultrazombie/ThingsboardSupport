@@ -17,6 +17,5 @@ ACCESS_TOKEN_RAS=RASPBERRY_PI_DEMO_TOKEN
     mosquitto_pub -d -h "$HOST_NAME" -p "1883" -t "v1/devices/me/telemetry" -u "$ACCESS_TOKEN3" -m {"c1":"${RANDOM:0:2}"}
     mosquitto_pub -d -h "$HOST_NAME" -p "1883" -t "v1/devices/me/telemetry" -u "$ACCESS_TOKEN_DH" -m {"DH":"${RANDOM:0:2}"}
     mosquitto_pub -d -h "$HOST_NAME" -p "1883" -t "v1/devices/me/telemetry" -u "$ACCESS_TOKEN_RAS" -m {"RAS":"${RANDOM:0:2}"}
-    sleep 2
- done 
-
+    sleep 0.1
+ done

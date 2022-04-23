@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: promtail-daemonset
+  namespace: thingsboard
+  labels:
+    app: promtail-server
+spec:
+  selector:
+    matchLabels:
+      app: promtail-server
+  template:
+    metadata:
+      labels:
+        app: promtail-server
+    spec:
+      serviceAccount: promtail-serviceaccount
+      serviceAccountName: promtail-serviceaccount
+      containers:
+        - name: promtail-container
+          image: grafana/promtail:2.2.1
+          args: ["-config.file=/etc/promtail/promtail-config.yaml"]
+          ports:
+            - name: http-metrics
+              containerPort: 9080
+          resources: {}
+          volumeMounts:
+            - name: promtail-config
+              mountPath: /etc/promtail/
+            - name: varlog
+              mountPath: /var/log
+            - name: varlibdockercontainers
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+            - name: run
+              mountPath: /run/promtail
+            - name: pods
+              readOnly: true
+              mountPath: /var/log/pods
+            - name: kube-api-access-f7lrr
+              readOnly: true
+              mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          env:
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
+      volumes:
+        - name: promtail-config
+          configMap:
+            name: promtail-config
+            defaultMode: 420
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: varlibdockercontainers
+          hostPath:
+            path: /var/lib/docker/containers
+        - name: run
+          hostPath:
+            path: /run/promtail
+            type: ''
+        - name: pods
+          hostPath:
+            path: /var/log/pods
+            type: ''
+        - name: kube-api-access-f7lrr
+          projected:
+            sources:
+              - serviceAccountToken:
+                  expirationSeconds: 3607
+                  path: token
+              - configMap:
+                  name: kube-root-ca.crt
+                  items:
+                    - key: ca.crt
+                      path: ca.crt
+              - downwardAPI:
+                  items:
+                    - path: namespace
+                      fieldRef:
+                        apiVersion: v1
+                        fieldPath: metadata.namespace
+            defaultMode: 420

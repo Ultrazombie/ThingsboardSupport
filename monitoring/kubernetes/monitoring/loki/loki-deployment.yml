@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loki-deployment
+  namespace: thingsboard
+  labels:
+    app: loki-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loki-server
+  template:
+    metadata:
+      labels:
+        app: loki-server
+    spec:
+      containers:
+        - name: loki
+          image: grafana/loki:2.2.1
+          args:
+            - "--config.file=/etc/loki/config-loki.yml"
+          ports:
+            - containerPort: 3100
+          resources:
+            requests:
+              cpu: 500m
+              memory: 500M
+            limits:
+              cpu: 1
+              memory: 1Gi
+          volumeMounts:
+            - name: loki-config-volume
+              mountPath: /etc/loki/
+            - name: loki-storage-volume
+              mountPath: /loki/
+      volumes:
+        - name: loki-config-volume
+          configMap:
+            defaultMode: 420
+            name: loki-server-conf
+
+        - name: loki-storage-volume
+          emptyDir: {}
