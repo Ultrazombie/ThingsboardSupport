@@ -9,7 +9,7 @@ spec:
     cassandraNode: "1"
   containers:
   - name: cassandra-backup
-    image: pon0mar/k8s-backup
+    image: YOUR_DOCKERHUB_NAME/k8s-backup
     imagePullPolicy: Always
     env:
       - name: WEBHOOK
