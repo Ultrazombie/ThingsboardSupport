@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cassandra-restore
+  namespace: thingsboard
+spec:
+  nodeSelector:
+    role: cassandra
+    cassandraNode: "1"
+  containers:
+  - name: cassandra-restore
+    image: YOUR_DOCKERHUB_NAME/k8s-backup
+    imagePullPolicy: Always
+    env:
+      - name: WEBHOOK
+        value: YOUR_WEBHOOK_ENDPOINT
+      - name: CQLSH_HOST
+        value: cassandra
+      - name: BACKUP_FILE
+        value: /data/backup/YOUR_BACKUP
+    command:
+      - /bin/bash
+      - -c
+      - /home/root/restoreCassandra.sh && sleep 250000
+    volumeMounts:
+      - name: cassandra-data
+        mountPath: /var/lib/cassandra
+      - name: datastore
+        mountPath: /data
+  volumes:
+    - name: cassandra-data
+      persistentVolumeClaim:
+        claimName: cassandra-data-cassandra-0
+    - name: datastore
+      persistentVolumeClaim:
+        claimName: tb-backup-cassandra-cassandra-0
+
+  restartPolicy: Never
+
+---
