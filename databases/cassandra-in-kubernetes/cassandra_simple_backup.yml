@@ -22,7 +22,7 @@ spec:
       - /bin/bash
       - -c
       - /home/root/backupCassandra.sh && sleep 250000
-     volumeMounts:
+    volumeMounts:
       - name: cassandra-data
         mountPath: /var/lib/cassandra
       - name: datastore
@@ -30,10 +30,11 @@ spec:
   volumes:
     - name: cassandra-data
       persistentVolumeClaim:
-        claimName: cassandra-data-cassandra-1
+        claimName: cassandra-data-cassandra-0
     - name: datastore
       persistentVolumeClaim:
-        claimName: tb-backup-cassandra-cassandra-1
+        claimName: tb-backup-cassandra-cassandra-0
+
 
   restartPolicy: Never
 
