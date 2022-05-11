@@ -28,13 +28,9 @@ spec:
         volumes:
           - name: cassandra-data
             persistentVolumeClaim:
-              claimName: cassandra-data-cassandra-1
+              claimName: cassandra-data-cassandra-0
           - name: datastore
             persistentVolumeClaim:
-              claimName: tb-backup-cassandra-cassandra-1
-          - name: s3cfg
-            configMap:
-              name: s3-cfg
-              defaultMode: 0755
+              claimName: tb-backup-cassandra-cassandra-0
 
         restartPolicy: OnFailure
