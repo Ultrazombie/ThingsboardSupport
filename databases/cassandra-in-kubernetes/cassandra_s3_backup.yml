@@ -4,7 +4,8 @@ metadata:
   name: s3-backup-cassandra
   namespace: thingsboard
 spec:
-
+  nodeSelector:
+    role: cassandra
   containers:
   - name: cass-to-s3
     image: pon0mar/k8s-backup
@@ -16,6 +17,8 @@ spec:
         value: YOUR_S3_BUCKET_URI
       - name: CQLSH_HOST
         value: cassandra
+      - name: DB
+        value: /var/lib/cassandra/data/thingsboard
     command:
       - /bin/bash
       - -c
