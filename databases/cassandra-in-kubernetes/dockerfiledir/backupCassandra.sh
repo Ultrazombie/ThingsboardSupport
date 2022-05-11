@@ -2,8 +2,11 @@
 BACKUP_PATH="/data/backup/"
 
 LOG="${BACKUP_PATH}BackupCassandra.log"
-DB="/var/lib/cassandra/data/thingsboard"
 WEBHOOK_FILE="${BACKUP_PATH}WebhookMessageCassandra.log"
+
+if [ ! "$DB" ]; then
+	DB="/var/lib/cassandra/data/thingsboard/"
+fi
 
 mkdir -p $BACKUP_PATH
 chmod -R o+rw $BACKUP_PATH
