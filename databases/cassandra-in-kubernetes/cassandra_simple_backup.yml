@@ -4,7 +4,9 @@ metadata:
   name: once-backup-cassandra
   namespace: thingsboard
 spec:
-
+  nodeSelector:
+    role: cassandra
+    cassandraNode: "1"
   containers:
   - name: cassandra-backup
     image: pon0mar/k8s-backup
@@ -12,6 +14,10 @@ spec:
     env:
       - name: WEBHOOK
         value: YOUR_WEBHOOK_ENDPOINT
+      - name: CQLSH_HOST
+        value: cassandra
+      - name: DB
+        value: /var/lib/cassandra/data/thingsboard/
     command:
       - /bin/bash
       - -c
