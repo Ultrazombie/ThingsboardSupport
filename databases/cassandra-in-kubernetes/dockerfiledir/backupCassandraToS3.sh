@@ -2,11 +2,14 @@
 BACKUP_PATH="/data/backup/"
 
 LOG="${BACKUP_PATH}BackupCassandra.log"
-DB="/var/lib/cassandra/data/thingsboard"
 WEBHOOK_FILE="${BACKUP_PATH}WebhookMessageCassandra.log"
 
-mkdir -p $BACKUP_PATH
-chmod -R o+rw $BACKUP_PATH
+if [ ! "$DB" ]; then
+	DB="/var/lib/cassandra/data/thingsboard"
+fi
+
+mkdir -p "${BACKUP_PATH}"
+chmod -R o+rw "${BACKUP_PATH}"
 exec > >(tee -ia $LOG $WEBHOOK_FILE)
 exec 2> >(tee -ia $LOG $WEBHOOK_FILE >&2)
 truncate -s 0 $WEBHOOK_FILE
