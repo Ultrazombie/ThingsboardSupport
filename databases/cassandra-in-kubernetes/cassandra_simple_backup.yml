@@ -8,7 +8,7 @@ spec:
     role: cassandra
     cassandraNode: "1"
   containers:
-  - name: cassandra-backup
+  - name: once-backup-cassandra
     image: YOUR_DOCKERHUB_NAME/k8s-backup
     imagePullPolicy: Always
     env:
