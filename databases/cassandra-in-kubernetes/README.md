@@ -33,11 +33,13 @@ Has been added so that your team can see if the backup or restore was successful
 
 ## Preparing
 
-1. Open the build-docker-image.sh file and set the **DOCKERHUB_NAME**, **VERSION**
+1. You need to log in to docker under your docker account: `docker login`
 
-2. Run the docker buid script: `./build-docker-image.sh`
+2. Open the `build-docker-image.sh` file and set the **DOCKERHUB_NAME**, **VERSION**
 
-3. Go to your docker hub and make sure that the image has been successfully built.
+3. Run the docker buid script: `./build-docker-image.sh`
+
+4. Go to your docker hub and make sure that the image has been successfully built.
 
 > In order for the backup pod to be able to use cassandra pvc, they must
  be on the same node. Labels are used for this. Run the command to
