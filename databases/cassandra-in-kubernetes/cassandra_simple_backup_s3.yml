@@ -6,8 +6,9 @@ metadata:
 spec:
   nodeSelector:
     role: cassandra
+    cassandraNode: "1"
   containers:
-  - name: cass-to-s3
+  - name: s3-backup-cassandra
     image: YOUR_DOCKERHUB_NAME/k8s-backup
     imagePullPolicy: Always
     env:
@@ -18,7 +19,9 @@ spec:
       - name: CQLSH_HOST
         value: cassandra
       - name: DB
-        value: /var/lib/cassandra/data/thingsboard
+        value: /var/lib/cassandra/data/thingsboard/
+      - name: DATASTORE
+        value: /data
     command:
       - /bin/bash
       - -c
