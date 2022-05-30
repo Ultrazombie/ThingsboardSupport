@@ -18,6 +18,8 @@ spec:
         value: cassandra
       - name: DB
         value: /var/lib/cassandra/data/thingsboard/
+      - name: DATASTORE
+        value: /data
     command:
       - /bin/bash
       - -c
