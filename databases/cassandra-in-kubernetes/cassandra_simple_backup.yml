@@ -38,6 +38,6 @@ spec:
         claimName: tb-backup-cassandra-cassandra-0
 
 
-  restartPolicy: Never
+  restartPolicy: OnFailure
 
 ---
