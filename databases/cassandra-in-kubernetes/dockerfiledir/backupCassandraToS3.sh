@@ -17,7 +17,7 @@ find $BACKUP_PATH -mtime +3 -exec rm -f {} \; # delete backup older than * days
 
 echo -e "\n---- Start Cassandra backup process at $(date +'%d-%b-%y_%H:%M') ----"
 
-AVAIL=$(df -m / | awk '{print $4}' | tail -1)
+AVAIL=$(df -m "$DATASTORE" | awk '{print $4}' | tail -1)
 FILESIZE=$(du -sm $DB | awk '{print int($1)}')
 
 echo "Free space: ${AVAIL} Mb"
