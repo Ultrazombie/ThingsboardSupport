@@ -20,7 +20,7 @@ if [ "$1" ]; then
 fi
 
 TB_PE_ORIGINAL_YML="pe-${VERSION}.yml"
-TB_PE_ORIGINAL_YML_SOURCE="https://raw.githubusercontent.com/thingsboard/ThingsboardSupport/main/yml/${TB_PE_ORIGINAL_YML}"
+TB_PE_ORIGINAL_YML_SOURCE="https://raw.githubusercontent.com/thingsboard/ThingsboardSupport/main/yml/pe-yml/${TB_PE_ORIGINAL_YML}"
 TB_PE_MOD_YML="thingsboard.yml"
 DIFF_YML="differences.yml"
 OUTPUT="output.conf"
