@@ -1,4 +1,5 @@
-FROM cassandra:3.11.9
+FROM cassandra:4.0.1
+# FROM bitnami/cassandra:3.11.6
 
 # # Run the Update
 RUN apt-get update -y && apt-get upgrade -y
@@ -10,7 +11,7 @@ RUN curl -sO https://bootstrap.pypa.io/pip/3.4/get-pip.py
 RUN python get-pip.py
 RUN pip install --upgrade pip
 
-COPY ./backupCassandra.sh ./backupCassandraToS3.sh /home/root/
+COPY ./backupCassandra.sh ./backupCassandraToS3.sh ./restoreCassandra.sh /home/root/
 
 RUN chmod 777 /home/root/
 

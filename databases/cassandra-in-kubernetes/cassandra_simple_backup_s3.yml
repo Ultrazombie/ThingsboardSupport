@@ -4,10 +4,12 @@ metadata:
   name: s3-backup-cassandra
   namespace: thingsboard
 spec:
-
+  nodeSelector:
+    role: cassandra
+    cassandraNode: "1"
   containers:
-  - name: cass-to-s3
-    image: pon0mar/k8s-backup
+  - name: s3-backup-cassandra
+    image: YOUR_DOCKERHUB_NAME/k8s-backup
     imagePullPolicy: Always
     env:
       - name: WEBHOOK
@@ -16,6 +18,10 @@ spec:
         value: YOUR_S3_BUCKET_URI
       - name: CQLSH_HOST
         value: cassandra
+      - name: DB
+        value: /var/lib/cassandra/data/thingsboard/
+      - name: DATASTORE
+        value: /data/
     command:
       - /bin/bash
       - -c
@@ -31,10 +37,10 @@ spec:
   volumes:
     - name: cassandra-data
       persistentVolumeClaim:
-        claimName: cassandra-data-cassandra-1
+        claimName: cassandra-data-cassandra-0
     - name: datastore
       persistentVolumeClaim:
-        claimName: tb-backup-cassandra-cassandra-1
+        claimName: tb-backup-cassandra-cassandra-0
     - name: s3cfg
       configMap:
         name: s3-cfg

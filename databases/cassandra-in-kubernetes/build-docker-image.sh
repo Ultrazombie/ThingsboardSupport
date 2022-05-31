@@ -1,8 +1,10 @@
 #!/bin/bash
 
 # Go to dockerfile directory
-cd tb/backup/dockerfiledir || exit
+cd ./dockerfiledir || exit
 
-# Replace YOU_DOCKERHUB_NAME and VERSION
-docker build -t YOU_DOCKERHUB_NAME/k8s-backup:VERSION .
-docker push YOU_DOCKERHUB_NAME/k8s-backup:VERSION
+# Change DOCKERHUB_NAME and VERSION
+DOCKERHUB_NAME=
+VERSION=latest
+docker build -t "${DOCKERHUB_NAME}"/k8s-backup:"${VERSION}" .
+docker push "${DOCKERHUB_NAME}"/k8s-backup:"${VERSION}"
