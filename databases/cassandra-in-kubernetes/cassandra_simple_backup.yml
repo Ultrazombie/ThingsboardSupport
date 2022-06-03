@@ -12,8 +12,13 @@ spec:
     image: YOUR_DOCKERHUB_NAME/k8s-backup
     imagePullPolicy: Always
     env:
-      - name: WEBHOOK
-        value: YOUR_WEBHOOK_ENDPOINT
+    ###If you want using web-hooks uncomment the strings below
+      # - name: WEBHOOK
+      #   valueFrom:
+      #     secretKeyRef:
+      #       name: thingsboard
+      #       key: webhook-key
+      #       optional: false
       - name: CQLSH_HOST
         value: cassandra
       - name: DB
