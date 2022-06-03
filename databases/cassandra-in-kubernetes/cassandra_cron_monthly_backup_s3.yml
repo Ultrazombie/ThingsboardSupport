@@ -1,0 +1,111 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: s3-cfg
+data:
+  s3cfg: |+
+    [default]
+    host_base = s3.amazonaws.com
+    host_bucket = $HOST_BUCKET
+    check_ssl_certificate = False
+    use_https = True
+    cloudfront_host = cloudfront.amazonaws.com
+    access_key = $ACCESS_KEY
+    secret_key = $SECRET_KEY
+
+---
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: s3-backup-cassandra
+  namespace: thingsboard
+spec:
+  schedule: "0 0 1 * *"
+  successfulJobsHistoryLimit: 0
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:          
+            type: backup
+            workload: cassandra  
+        spec:
+          nodeSelector:
+            role: cassandra
+            cassandraNode: "1"
+          containers:
+          - name: s3-backup-cassandra
+            image: YOUR_DOCKERHUB_NAME/k8s-backup
+            imagePullPolicy: Always
+            env:
+            ###If you want using web-hooks uncomment the strings below
+              # - name: WEBHOOK
+              #   valueFrom:
+              #     secretKeyRef:
+              #       name: thingsboard
+              #       key: webhook-key
+              #       optional: false
+              - name: S3_BUCKET_URI
+                valueFrom:
+                  secretKeyRef:
+                    name: thingsboard
+                    key: s3_bucket_uri-key
+                    optional: false
+              - name: ACCESS_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: thingsboard
+                    key: access-key
+                    optional: false
+              - name: SECRET_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: thingsboard
+                    key: secret-key
+                    optional: false
+              - name: HOST_BUCKET
+                valueFrom:
+                  secretKeyRef:
+                    name: thingsboard
+                    key: host_bucket-key
+                    optional: false
+              - name: BACKUP_TTL_DEYS
+                value: "+90"
+              - name: WORKDIR
+                value: /data/backup/monthly/
+              - name: CQLSH_HOST
+                value: cassandra
+              - name: DB
+                value: /var/lib/cassandra/data/thingsboard/
+              - name: DATASTORE
+                value: /data/
+            command:
+              - /bin/bash
+              - -c
+              - /home/root/backupCassandraToS3.sh && sleep 250000
+            volumeMounts:
+              - name: cassandra-data
+                mountPath: /var/lib/cassandra
+              - name: datastore
+                mountPath: /data
+              - name: s3cfg
+                mountPath: /s3
+                readOnly: false
+          volumes:
+            - name: cassandra-data
+              persistentVolumeClaim:
+                claimName: cassandra-data-cassandra-0
+            - name: datastore
+              persistentVolumeClaim:
+                claimName: tb-backup-cassandra-cassandra-0
+            - name: s3cfg
+              configMap:
+                name: s3-cfg
+                defaultMode: 0755
+
+          restartPolicy: OnFailure
+
+---
+
