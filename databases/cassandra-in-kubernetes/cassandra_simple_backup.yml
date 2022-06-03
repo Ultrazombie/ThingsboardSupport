@@ -19,6 +19,8 @@ spec:
       #       name: thingsboard
       #       key: webhook-key
       #       optional: false
+      - name: BACKUP_TTL_DEYS
+        value: "+7"
       - name: CQLSH_HOST
         value: cassandra
       - name: DB

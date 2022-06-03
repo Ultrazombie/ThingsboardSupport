@@ -59,7 +59,9 @@ spec:
           secretKeyRef:
             name: thingsboard
             key: host_bucket-key
-            optional: false 
+            optional: false
+      - name: BACKUP_TTL_DEYS
+        value: "+7"
       - name: CQLSH_HOST
         value: cassandra
       - name: DB
