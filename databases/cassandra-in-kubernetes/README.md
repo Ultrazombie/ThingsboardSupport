@@ -60,19 +60,43 @@ Update your cassandara deployment as specified in the example `cassandara.yml`
 
 **Simple backup** - choose `cassandra_simple_backup.yml`
 
-1. Replace **YOUR_DOCKERHUB_NAME**, **YOUR_WEBHOOK_ENDPOINT** to your own.
+1. Replace **YOUR_DOCKERHUB_NAME** to your own.
 
-2. You can replace **DB** variable and cassandra-data volume path if you using non-standart location for cassandra. The standart location is `/var/lib/cassandra/data/thingsboard`
+2. If you want to use a webhook, please uncomment the lines in the configuration. Then add your webhook url to kubernetes secrets:
 
-3. Run `kubectl apply -f cassandra_simple_backup.yml`
+    ```
+    export WEBHOOK=YOUR_WEBHOOK_URL
+
+    kubectl create -n thingsboard secret generic thingsboard \
+    --from-literal=webhook-key=$WEBHOOK
+    ```
+
+3. You can replace **DB** variable and cassandra-data volume path if you using non-standart location for cassandra. The standart location is `/var/lib/cassandra/data/thingsboard`
+
+4. Run `kubectl apply -f cassandra_simple_backup.yml`
 
 **Backup with push to S3** - choose cassandra_s3_backup.yml
 
-1. Replace **YOUR_DOCKERHUB_NAME**, **YOUR_WEBHOOK_ENDPOINT**, **YOUR_S3_BUCKET_URI** to your own.
+1. Replace **YOUR_DOCKERHUB_NAME** to your own.
 
 2. You can replace **DB** variable and cassandra-data volume path if you using non-standart location for cassandra. The standart location is `/var/lib/cassandra/data/thingsboard`
 
-3. Set ***host_bucket***, ***access_key***, ***secret_key*** for pushing backup to S3.
+3. Set variables to send the backup to S3. Additionally, you can set a webhook url variable, and uncomment the lines in the configuration for webhook.
+
+```
+export WEBHOOK_URL=
+export S3_BUCKET_URI=
+export ACCESS_KEY=
+export SECRET_KEY=
+export HOST_BUCKET=
+
+kubectl create -n thingsboard secret generic thingsboard \
+--from-literal=webhook-key=$WEBHOOK_URL \
+--from-literal=s3_bucket_uri-key=$S3_BUCKET_URI \
+--from-literal=access-key=$ACCESS_KEY \
+--from-literal=secret-key=$SECRET_KEY \
+--from-literal=host_bucket-key=$HOST_BUCKET
+```
 
 4. Run `kubectl apply -f cassandra_s3_backup.yml`
 
@@ -80,10 +104,10 @@ Update your cassandara deployment as specified in the example `cassandara.yml`
 
 1. Select which backup you want to use and replace **BACKUP_FILE** with the full path to the backup. The ***/data/backup/*** folder is used to store your backups. If you want to use a different backup file (e.g. one located on your machine) you can upload it to this folder: 
 `kubectl cp YOUR_LOCAL_BACKUP_FILE_LOCATION CASSANDRA_POD:/data/backup/BACKUP_FILE_NAME`
-2. Replace **YOUR_DOCKERHUB_NAME**, **YOUR_WEBHOOK_ENDPOINT** to your own.
+2. Replace **YOUR_DOCKERHUB_NAME** to your own.
 3. Go to cassandra pod and delete the thingsboard data:
-```
-kubectl exec -it CASSNDRA_POD bash
-rm -rf var/lib/cassandra/data/thingsboard/*
-```
+    ```
+    kubectl exec -it CASSNDRA_POD bash
+    rm -rf var/lib/cassandra/data/thingsboard/*
+    ```
 4. Run `kubectl apply -f cassandra_simple_restore.yml`
