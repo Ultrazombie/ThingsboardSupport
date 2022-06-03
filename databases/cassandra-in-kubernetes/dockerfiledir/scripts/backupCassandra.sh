@@ -1,19 +1,22 @@
 #!/bin/bash
-WORKDIR="/data/backup/"
+
+if [ ! "$WORKDIR" ]; then
+	WORKDIR="/data/backup/"
+fi
+
+if [ ! "$DB" ]; then
+	DB="/var/lib/cassandra/data/thingsboard"
+fi
 
 LOG="${WORKDIR}BackupCassandra.log"
 WEBHOOK_FILE="WebhookMessageCassandra.log"
-
-if [ ! "$DB" ]; then
-	DB="/var/lib/cassandra/data/thingsboard/"
-fi
 
 mkdir -p $WORKDIR
 chmod -R o+rw $WORKDIR
 exec > >(tee -ia $LOG $WEBHOOK_FILE)
 exec 2> >(tee -ia $LOG $WEBHOOK_FILE >&2)
 truncate -s 0 $WEBHOOK_FILE
-find $WORKDIR -mtime +3 -exec rm -f {} \; # delete backup older than * days
+find $WORKDIR -mtime "$TTL_DEYS" -exec rm -f {} \; # delete backup older than * days
 
 echo -e "\n---- Start Cassandra backup process at $(date +'%d-%b-%y_%H:%M') ----"
 
