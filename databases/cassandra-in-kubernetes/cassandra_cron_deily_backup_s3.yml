@@ -18,7 +18,7 @@ data:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: s3-backup-cassandra
+  name: s3-daily-backup-cassandra
   namespace: thingsboard
 spec:
   schedule: "0 7 * * *"
@@ -36,7 +36,7 @@ spec:
             role: cassandra
             cassandraNode: "1"
           containers:
-          - name: s3-backup-cassandra
+          - name: s3-daily-backup-cassandra
             image: YOUR_DOCKERHUB_NAME/k8s-backup
             imagePullPolicy: Always
             env:
