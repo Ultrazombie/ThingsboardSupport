@@ -5,7 +5,7 @@ mkdir -p "${WORKDIR}"
 chmod -R o+rw "${WORKDIR}"
 cd "${WORKDIR}" || exit
 
-WEBHOOK_FILE="${WORKDIR}WebhookRestoreMessageCassandra.log"
+WEBHOOK_FILE="WebhookMessageCassandra.log"
 exec > >(tee -ia $LOG "${WEBHOOK_FILE}")
 exec 2> >(tee -ia $LOG "${WEBHOOK_FILE}" >&2)
 truncate -s 0 $WEBHOOK_FILE
@@ -43,5 +43,9 @@ echo -e "------- Backup process finished at $(date +'%d-%b-%y_%H:%M') -------\n"
 
 sed -e "s/\r//g" $WEBHOOK_FILE > ${WEBHOOK_FILE}.mod
 
-WEBHOOK_DATA="{\"text\":\"$(cat ${WEBHOOK_FILE}.mod)\"}"
-curl -X POST -H 'Content-type: application/json' --data "$WEBHOOK_DATA" "$WEBHOOK"
+if [ "$WEBHOOK" ]; then
+	WEBHOOK_DATA="{\"text\":\"$(cat $WEBHOOK_FILE)\"}"
+	curl -X POST -H 'Content-type: application/json' --data "$WEBHOOK_DATA" "$WEBHOOK"
+else
+    echo -e "\n WEBHOOK URL is not specified"
+fi

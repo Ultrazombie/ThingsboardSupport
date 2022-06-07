@@ -11,7 +11,7 @@ RUN curl -sO https://bootstrap.pypa.io/pip/3.4/get-pip.py
 RUN python get-pip.py
 RUN pip install --upgrade pip
 
-COPY ./backupCassandra.sh ./backupCassandraToS3.sh ./restoreCassandra.sh /home/root/
+COPY ./scripts/* /home/root/
 
 RUN chmod 777 /home/root/
 

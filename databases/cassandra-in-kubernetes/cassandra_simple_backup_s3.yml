@@ -1,4 +1,21 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: s3-cfg
+data:
+  s3cfg: |+
+    [default]
+    host_base = s3.amazonaws.com
+    host_bucket = $HOST_BUCKET
+    check_ssl_certificate = False
+    use_https = True
+    cloudfront_host = cloudfront.amazonaws.com
+    access_key = $ACCESS_KEY
+    secret_key = $SECRET_KEY
+
+---
+
+apiVersion: v1
 kind: Pod
 metadata:
   name: s3-backup-cassandra
@@ -12,10 +29,39 @@ spec:
     image: YOUR_DOCKERHUB_NAME/k8s-backup
     imagePullPolicy: Always
     env:
-      - name: WEBHOOK
-        value: YOUR_WEBHOOK_ENDPOINT
+    ###If you want using web-hooks uncomment the strings below
+      # - name: WEBHOOK
+      #   valueFrom:
+      #     secretKeyRef:
+      #       name: thingsboard
+      #       key: webhook-key
+      #       optional: false
       - name: S3_BUCKET_URI
-        value: YOUR_S3_BUCKET_URI
+        valueFrom:
+          secretKeyRef:
+            name: thingsboard
+            key: s3_bucket_uri-key
+            optional: false
+      - name: ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: thingsboard
+            key: access-key
+            optional: false
+      - name: SECRET_KEY
+        valueFrom:
+          secretKeyRef:
+            name: thingsboard
+            key: secret-key
+            optional: false
+      - name: HOST_BUCKET
+        valueFrom:
+          secretKeyRef:
+            name: thingsboard
+            key: host_bucket-key
+            optional: false
+      - name: BACKUP_TTL_DEYS
+        value: "+7"
       - name: CQLSH_HOST
         value: cassandra
       - name: DB
@@ -49,18 +95,4 @@ spec:
   restartPolicy: OnFailure
 
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: s3-cfg
-data:
-  s3cfg: |+
-    [default]
-    host_base = s3.amazonaws.com
-    host_bucket = 
-    check_ssl_certificate = False
-    use_https = True
-    cloudfront_host = cloudfront.amazonaws.com
-    access_key = 
-    secret_key = 
----
+
