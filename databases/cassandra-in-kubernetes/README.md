@@ -3,10 +3,10 @@ Scripts for backup and restore Cassandra in Kubernetes
 
 In ***`dockerfiledir`*** you can find our scripts to backup and restore the thingsboard database in Cassandra.
 `backupCassandra.sh` is a simple script for performing a database backup. 
-- BACKUP_PATH - This variable is responsible for location of backup and log files.
+- WORKDIR - This variable is responsible for location of backup and log files.
 - TARFILE - This is the name of you backup .tar
 - WEBHOOK - If you want to be notified after the process is finished you need to insert your own webhook endpoint.
--  *`Find $BACKUP_PATH -mtime +3 -exec rm -f {} \;`* -- this line will set the deletion of files in the BACKUP_PATH folder that have been changed more than 3 days ago.
+- BACKUP_TTL_DEYS - set the deletion of files in the WORKDIR folder that have been changed more than several days ago.
 - Next to the backup file will be a log file. Here you can track whether any errors occurred during backup.
 - Script will calculate the amount of free space and database size, and either generate a warning or continue the backup.
 - After a backup is created, you can see in logs the size of the backup file and make sure it contains information. Otherwise you will get a warning.
@@ -75,7 +75,7 @@ Update your cassandara deployment as specified in the example `cassandara.yml`
 
 4. Run `kubectl apply -f cassandra_simple_backup.yml`
 
-**Backup with push to S3** - choose cassandra_s3_backup.yml
+**Backup with push to S3** - choose cassandra_simple_backup_s3.yml
 
 1. Replace **YOUR_DOCKERHUB_NAME** to your own.
 
@@ -99,6 +99,11 @@ kubectl create -n thingsboard secret generic thingsboard \
 ```
 
 4. Run `kubectl apply -f cassandra_s3_backup.yml`
+
+**Scheduled backups**
+
+You can schedule backups for a certain period of time. For this purpose, there are daily weekly and monthly cassadra_cron deployments. The backup can be stored internally in pod and on the AWS S3. They are configured in the same way as the simple ones.
+
 
 **Restore** - choose cassandra_simple_restore.yml
 
