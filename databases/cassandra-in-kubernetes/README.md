@@ -6,7 +6,7 @@ In ***`dockerfiledir`*** you can find our scripts to backup and restore the thin
 - WORKDIR - This variable is responsible for location of backup and log files.
 - TARFILE - This is the name of you backup .tar
 - WEBHOOK - If you want to be notified after the process is finished you need to insert your own webhook endpoint.
-- BACKUP_TTL_DEYS - set the deletion of files in the WORKDIR folder that have been changed more than several days ago.
+- BACKUP_TTL_DAYS - set the deletion of files in the WORKDIR folder that have been changed more than several days ago.
 - Next to the backup file will be a log file. Here you can track whether any errors occurred during backup.
 - Script will calculate the amount of free space and database size, and either generate a warning or continue the backup.
 - After a backup is created, you can see in logs the size of the backup file and make sure it contains information. Otherwise you will get a warning.

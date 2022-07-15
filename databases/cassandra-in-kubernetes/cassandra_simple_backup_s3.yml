@@ -60,7 +60,7 @@ spec:
             name: thingsboard
             key: host_bucket-key
             optional: false
-      - name: BACKUP_TTL_DEYS
+      - name: BACKUP_TTL_DAYS
         value: "+7"
       - name: CQLSH_HOST
         value: cassandra
