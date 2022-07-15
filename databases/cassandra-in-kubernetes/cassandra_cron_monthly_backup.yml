@@ -30,7 +30,7 @@ spec:
               #       name: thingsboard
               #       key: webhook-key
               #       optional: false
-              - name: BACKUP_TTL_DEYS
+              - name: BACKUP_TTL_DAYS
                 value: "+90"
               - name: WORKDIR
                 value: /data/backup/monthly/

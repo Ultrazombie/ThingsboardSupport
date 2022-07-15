@@ -16,7 +16,7 @@ chmod -R o+rw "${WORKDIR}"
 exec > >(tee -ia $LOG $WEBHOOK_FILE)
 exec 2> >(tee -ia $LOG $WEBHOOK_FILE >&2)
 truncate -s 0 $WEBHOOK_FILE
-find $WORKDIR -mtime "$BACKUP_TTL_DEYS" -exec rm -f {} \; # delete backup older than * days
+find $WORKDIR -mtime "$BACKUP_TTL_DAYS" -exec rm -f {} \; # delete backup older than * days
 
 echo -e "\n---- Start Cassandra backup process at $(date +'%d-%b-%y_%H:%M') ----"
 
